@@ -82,8 +82,8 @@ namespace ClanSim
     public class PopulationManager
     {
         // simulation settings variables, person level settings are in the Person class
-        public static int INITIAL_POPULATION_SIZE = 10;
-        public static int NO_OF_YEARS = 1000;
+        public static int INITIAL_POPULATION_SIZE = 25;
+        public static int NO_OF_YEARS = 500;
         public static int PAUSE_BETWEEN_EACH_YEAR = 0;
 
         // constants
@@ -532,9 +532,9 @@ namespace ClanSim
     {
         // person settings variables
         public static readonly int _DEATH_AGE               = 80;
-        public static readonly int _FERTILITY_BEGIN_AGE     = 16;
-        public static readonly int _MARRAGE_AGE             = 18;
-        public static readonly int _FERTILITY_END_AGE       = 55;
+        public static readonly int _FERTILITY_BEGIN_AGE     = 14;
+        public static readonly int _MARRAGE_AGE             = 10;
+        public static readonly int _FERTILITY_END_AGE       = 80;
         public static readonly int _NO_OF_CHILDREN          = 2;
 
         /// <summary>

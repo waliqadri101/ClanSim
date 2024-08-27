@@ -4,6 +4,8 @@
 
 **ClanSim** is a simple, single-page console application written in C# that simulates a clan of people over time. As each year passes, you can observe the population grow. Individuals will age, marry, have children, remarry if their spouse dies, and eventually die—all while their generations live alongside them. You can also adjust the speed of the simulation.
 
+Debug the application to delve into the inner workings simulation.
+
 ![Screenshot](./screenshots/image001.png)
 
 ## Installation
@@ -39,6 +41,13 @@ After the summary, the `GettingMarried()` method is called to handle matchmaking
 
 ![Screenshot](./screenshots/image002.png)
 
-In the next screenshot, the year is 70. At this stage, people start to pass away as the life cycle continues.
+In the next screenshot, the year is 70. At this stage, people start to pass away as the life cycle continues. Simulation will end when every one from the clan is deceased
 
 ![Screenshot](./screenshots/image004.png)
+
+In the next screenshot, the year is progressed to 279 and the population is now 632 while 603 people have passed away.
+
+![Screenshot](./screenshots/image005.png)
+
+
+The simulation will end when either everyone in the clan is deceased or when the NO_OF_YEARS have passed.

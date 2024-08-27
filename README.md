@@ -2,27 +2,36 @@
 
 ## Introduction
 
-ClanSim is a small, one page, console application written in c#, that simulate a clan of people over time.
-As each year passes, You can see the population grow. People will age, marry, have children, re-marry if spouse dies and eventually die.
-As their generations are living along with them.
-you can change the speed of the simulation.
+**ClanSim** is a simple, single-page console application written in C# that simulates a clan of people over time. As each year passes, you can observe the population grow. Individuals will age, marry, have children, remarry if their spouse dies, and eventually die—all while their generations live alongside them. You can also adjust the speed of the simulation.
+
+![Screenshot](./screenshots/image001.png)
 
 ## Installation
 
-You can just copy and paste Program.cs and run, No dependencies as of 08/27/2024.
+1. **Clone the Project**:
+   - Clone the repository and run it using .NET 8.0.
 
+2. **Or Run Directly**:
+   - You can simply copy and paste `Program.cs` and run it—no dependencies required as of 08/27/2024.
 
 ## Features
 
-- Watch your clan, as people are born, grow old, have children and eventually die.
-- People can re marry if their spouse dies.
-- In Simulation, You can change how long people live. (_DEATH_AGE)
-- No. of children. (_NO_OF_CHILDREN)
-- Marrage age. (_MARRAGE_AGE)
-- Fertility age bracket (_FERTILITY_BEGIN_AGE, _FERTILITY_END_AGE)
-- Initial clan population. (INITIAL_POPULATION_SIZE)
-- No of years simulation can run. (NO_OF_YEARS)
-- Speed of the simulation.(PAUSE_BETWEEN_EACH_YEAR)
+- **Dynamic Population**: Watch your clan as people are born, grow old, have children, and eventually die.
+- **Yearly Simulation**: The application runs in a loop where each iteration represents one year.
+- **Remarriage**: People can remarry if their spouse dies.
+- **Customizable Settings**:
+  - **Life Span**: Adjust how long people live (`_DEATH_AGE`).
+  - **Number of Children**: Set the number of children per couple (`_NO_OF_CHILDREN`).
+  - **Marriage Age**: Define the marriage age (`_MARRAGE_AGE`).
+  - **Fertility Window**: Set the fertility age range (`_FERTILITY_BEGIN_AGE`, `_FERTILITY_END_AGE`).
+  - **Initial Population**: Determine the initial size of the clan (`INITIAL_POPULATION_SIZE`).
+  - **Simulation Duration**: Set the number of years the simulation will run (`NO_OF_YEARS`).
+  - **Simulation Speed**: Control the speed of the simulation (`PAUSE_BETWEEN_EACH_YEAR`).
 
+## Screenshots
 
-![Screenshot](./screenshots/image001.png)
+Here are some screenshots of ClanSim in action:
+
+![Screenshot](./screenshots/image002.png)
+![Screenshot](./screenshots/image003.png)
+![Screenshot](./screenshots/image004.png)

@@ -56,7 +56,7 @@ namespace ClanSim
         // simulation settings variables, person level settings are in the Person class
         public static int INITIAL_POPULATION_SIZE = 25;
         public static int NO_OF_YEARS = 1000; // no of years the simulation will run for
-        public static int PAUSE_BETWEEN_EACH_YEAR = 100;    // pause in milli seconds between each year
+        public static int PAUSE_BETWEEN_EACH_YEAR = 500;    // pause in milli seconds between each year
         public static bool SHOW_INDIVISUAL_DETAIL = true;   // if you want to show the information about indivisual person.
 
         // constants

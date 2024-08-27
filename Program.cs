@@ -1,4 +1,18 @@
-﻿using System;
+﻿// MIT License
+// 
+// Copyright (c) [2024] [waliqadri101@gmail.com]
+// 
+// Permission is hereby granted to use, copy, modify, and distribute this software 
+// for any purpose with or without fee, provided the above copyright notice appears 
+// in all copies.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, ARISING FROM, OUT OF, 
+// OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,7 +22,9 @@ namespace ClanSim
 {
     internal class Program
     {
-        #region functionality to move the console application to a desired x and y, for easy debugging
+
+        // this region is only here for the functionality of moving the console application to the right for easier debugging experience
+        #region MOVING THE CONSOLE TO LEFT
         const int SWP_NOSIZE = 0x0001;
         const int SWP_NOZORDER = 0x0004;
         const int SWP_SHOWWINDOW = 0x0040;
@@ -29,7 +45,6 @@ namespace ClanSim
         {
             SetWindowPos(GetConsoleWindow(), IntPtr.Zero, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW);
         }
-
         #endregion
 
         static void Main(string[] args)
@@ -42,8 +57,8 @@ namespace ClanSim
 
             // call the run method with parameters, the parameters are optionional
             // if no parameters are provided the default values will be used
-            oPopulationManager.Run(initialPopulationSize: 10, noOfYearsToRun: 2000);
-            
+            oPopulationManager.Run();
+
             Console.ReadLine();
         }
     }
@@ -66,10 +81,15 @@ namespace ClanSim
     /// </remarks>
     public class PopulationManager
     {
-        // constants
-        public static int INITIAL_POPULATION_SIZE = 6;
+        // simulation settings variables, person level settings are in the Person class
+        public static int INITIAL_POPULATION_SIZE = 10;
         public static int NO_OF_YEARS = 1000;
+        public static int PAUSE_BETWEEN_EACH_YEAR = 0;
 
+        // constants
+        public readonly string[] commonMaleNames = new string[] { "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Christopher", "Daniel", "Matthew", "Anthony", "Mark", "Donald", "Steven", "Paul", "Andrew", "Joshua", "Kenneth", "Kevin", "Brian", "George", "Edward", "Ronald", "Timothy", "Jason", "Jeffrey", "Ryan", "Jacob", "Gary", "Nicholas", "Eric", "Stephen", "Jonathan", "Larry", "Justin", "Scott", "Brandon", "Benjamin", "Samuel", "Frank", "Gregory", "Raymond", "Alexander", "Patrick", "Jack", "Dennis", "Jerry", "Tyler", "Aaron", "Jose", "Henry", "Adam", "Douglas", "Nathan", "Peter", "Zachary", "Kyle", "Walter", "Harold", "Jeremy", "Ethan", "Carl", "Keith", "Roger", "Gerald", "Christian", "Terry", "Sean", "Arthur", "Austin", "Noah", "Lawrence", "Jesse", "Joe", "Bryan", "Billy", "Jordan", "Albert", "Dylan", "Bruce", "Willie", "Gabriel", "Alan", "Juan", "Wayne", "Roy", "Ralph", "Randy", "Eugene", "Carlos", "Russell", "Louis", "Philip", "Vincent", "Bobby", "Johnny", "Logan" };
+        public readonly string[] commonFemaleNames = new string[] { "Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen", "Nancy", "Margaret", "Lisa", "Betty", "Dorothy", "Sandra", "Ashley", "Kimberly", "Donna", "Emily", "Michelle", "Carol", "Amanda", "Melissa", "Deborah", "Stephanie", "Rebecca", "Laura", "Sharon", "Cynthia", "Kathleen", "Helen", "Amy", "Shirley", "Angela", "Anna", "Brenda", "Pamela", "Nicole", "Ruth", "Katherine", "Samantha", "Christine", "Emma", "Catherine", "Debra", "Virginia", "Rachel", "Carolyn", "Janet", "Maria", "Heather", "Diane", "Julie", "Joyce", "Victoria", "Kelly", "Christina", "Lauren", "Joan", "Evelyn", "Olivia", "Judith", "Megan", "Cheryl", "Martha", "Andrea", "Frances", "Hannah", "Jacqueline", "Ann", "Gloria", "Jean", "Kathryn", "Alice", "Teresa", "Sara", "Janice", "Doris", "Madison", "Julia", "Grace", "Judy", "Abigail", "Marie", "Denise", "Beverly", "Amber", "Theresa", "Marilyn", "Danielle", "Diana", "Brittany", "Natalie", "Sophia", "Rose", "Isabella", "Alexis", "Kayla", "Lillian" };
+        
         /// <summary>
         /// population list with persons
         /// </summary>
@@ -78,28 +98,18 @@ namespace ClanSim
         /// <summary>
         /// Runs the simulation
         /// </summary>
-        public void Run(int initialPopulationSize = 0, int noOfYearsToRun = 0)
+        public void Run()
         {
-
-            #region IF CUSTOM initialPopulationSize AND noOfYearsToRun IS PROVIDED THAN MODIFY THE VARIABLES.
-            if (initialPopulationSize > 0)
-            {
-                PopulationManager.INITIAL_POPULATION_SIZE = initialPopulationSize;
-            }
-
-            if (noOfYearsToRun > 0)
-            {
-                PopulationManager.NO_OF_YEARS = noOfYearsToRun;
-            }
-            #endregion
+            InitBanner();
 
             // initialize the population
             InitializePopulation();
 
             for (int currentYear = 1; currentYear <= NO_OF_YEARS; currentYear++)
             {
-                Helper.msg($"The year is {currentYear}", ConsoleColor.Yellow);
-                Helper.msg($"===============", ConsoleColor.Yellow);
+                Helper.msg("");
+                Helper.msg($"Current year is {currentYear}", ConsoleColor.Gray);
+                Helper.msg($"===============", ConsoleColor.Gray);
 
                 Summary();
 
@@ -117,8 +127,109 @@ namespace ClanSim
                     break;
                 }
 
-                Thread.Sleep(100);
+                Thread.Sleep(PAUSE_BETWEEN_EACH_YEAR);
             }
+        }
+
+        private void InitBanner()
+        {
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(@"*************************************************************");
+            Console.WriteLine(@"*                                                           *");
+            Console.WriteLine(@"*                   Welcome to ClanSim                      *");
+            Console.WriteLine(@"*                                                           *");
+            Console.WriteLine(@"*************************************************************");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(@"");
+            Console.WriteLine(@" ██████╗██╗      █████╗ ███╗   ██╗███████╗██╗███╗  ███╗");
+            Console.WriteLine(@"██╔════╝██║     ██╔══██╗████╗  ██║██╔════╝╚═╝████╗████║");
+            Console.WriteLine(@"██║     ██║     ███████║██╔██╗ ██║███████╗██╗██║███║██║");
+            Console.WriteLine(@"██║     ██║     ██╔══██║██║╚██╗██║     ██║██║██║ ╚═╝██║");
+            Console.WriteLine(@" ██████╗███████╗██║  ██║██║ ╚████║███████║██║██║    ██║");
+            Console.WriteLine(@" ╚═════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝╚═╝    ╚═╝");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(@"");
+            Console.WriteLine(@"This program simulates the human life cycle, including births,");
+            Console.WriteLine(@"marriages, and deaths over the years. Watch as your population");
+            Console.WriteLine(@"grows, thrives, and eventually fades away, generation by generation.");
+            Console.WriteLine(@"");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(@"You can tweak the behavior of the simulation, such as:");
+            Console.WriteLine(@"- Initial Population Size");
+            Console.WriteLine(@"- Number of Children");
+            Console.WriteLine(@"- Death Age");
+            Console.WriteLine(@"- Number of Years to Run");
+            Console.WriteLine(@"- You can also change the speed of the simulation.");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(@"");
+            Console.WriteLine(@"*************************************************************");
+            Console.ResetColor();
+            Helper.msg("Press any key to run the simulation..", ConsoleColor.Yellow);
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// This initializes the Population with INITIAL_POPULATION_SIZE persons. 
+        /// </summary>
+        private void InitializePopulation()
+        {
+            this.Population = new();
+            Random random = new Random();
+
+            for (int i = 1; i <= PopulationManager.INITIAL_POPULATION_SIZE; i++)
+            {
+                // get random age for 10 to 25
+                int randomAgeForThisPerson = random.Next(1, 26);
+
+                // generate a random Gender for this person
+
+                Person.SexType randomGenderForThisPerson;
+                string generatedName = string.Empty;
+
+                if (random.Next(0, 2) == 0)
+                {
+                    generatedName = GenerateName(i);
+                    randomGenderForThisPerson = Person.SexType.Male;
+                }
+                else
+                {
+                    generatedName = GenerateName(i, false);
+                    randomGenderForThisPerson = Person.SexType.Female;
+                }
+
+                Person eachPerson = new Person
+                {
+                    Id = i,
+                    Name = generatedName,
+                    Age = randomAgeForThisPerson,
+                    Gender = randomGenderForThisPerson
+                };
+
+                this.Population.Add(eachPerson);
+            }
+        }
+
+        /// <summary>
+        /// Generate random names
+        /// </summary>
+        /// <param name="i">i is the id that attaches with the name</param>
+        /// <param name="isMale">true for male name</param>
+        /// <returns></returns>
+        private string GenerateName(int i, bool isMale = true)
+        {
+            Random random = new();
+            string generatedName;
+            if (isMale)
+            {
+                int nameIndex = random.Next(0, commonMaleNames.Length);
+                generatedName = $"{commonMaleNames[nameIndex]} {i}";
+            }
+            else {
+                int nameIndex = random.Next(0, commonFemaleNames.Length);
+                generatedName = $"{commonFemaleNames[nameIndex]} {i}";
+            }
+            return generatedName;
         }
 
         private bool IsPopulationWipedOut()
@@ -156,8 +267,8 @@ namespace ClanSim
                     spouse.IsFertile)
                 {
                     // check if each parent is able to have kids, even if one parent can have kids then they will have kids.
-                    if (person.Childrens.Count < Person._NO_OF_CHILDS ||
-                        spouse.Childrens.Count < Person._NO_OF_CHILDS)
+                    if (person.Childrens.Count < Person._NO_OF_CHILDREN ||
+                        spouse.Childrens.Count < Person._NO_OF_CHILDREN)
                     {
                         Random random = new Random();
 
@@ -171,19 +282,22 @@ namespace ClanSim
 
                         // generate a random Gender for this person
                         Person.SexType randomGenderForThisPerson;
+                        string generatedName = string.Empty;
                         if (random.Next(0, 2) == 0)
                         {
                             randomGenderForThisPerson = Person.SexType.Male;
+                            generatedName = GenerateName(newId, isMale: true);
                         }
                         else
                         {
                             randomGenderForThisPerson = Person.SexType.Female;
+                            generatedName = GenerateName(newId, isMale: false);
                         }
 
                         Person baby = new Person
                         {
                             Id = newId,
-                            Name = $"Person {newId}",
+                            Name = generatedName,
                             Age = babyAge,
                             Gender = randomGenderForThisPerson
                         };
@@ -224,7 +338,7 @@ namespace ClanSim
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool DoesIdExist( int id)
+        private bool DoesIdExist(int id)
         {
             return Population.Any(person => person.Id == id);
         }
@@ -298,43 +412,6 @@ namespace ClanSim
         }
 
         /// <summary>
-        /// This initializes the Population with INITIAL_POPULATION_SIZE persons. 
-        /// </summary>
-        private void InitializePopulation()
-        {
-            this.Population = new();
-            Random random = new Random();
-
-            for (int i = 1; i <= PopulationManager.INITIAL_POPULATION_SIZE; i++)
-            {
-                // get random age for 10 to 25
-                int randomAgeForThisPerson = random.Next(1, 26);
-
-                // generate a random Gender for this person
-
-                Person.SexType randomGenderForThisPerson;
-                if (random.Next(0, 2) == 0)
-                {
-                    randomGenderForThisPerson = Person.SexType.Male;
-                }
-                else
-                {
-                    randomGenderForThisPerson = Person.SexType.Female;
-                }
-
-                Person eachPerson = new Person
-                {
-                    Id = i,
-                    Name = $"Person {i}",
-                    Age = randomAgeForThisPerson,
-                    Gender = randomGenderForThisPerson
-                };
-
-                this.Population.Add(eachPerson);
-            }
-        }
-
-        /// <summary>
         /// Who ever is alive in the Population list will get 1 year incremented to their age.
         /// </summary>
         private void HappyBirthdayToAll()
@@ -359,7 +436,7 @@ namespace ClanSim
         /// <summary>
         /// This method will get each person from the population list, and try to marry them with someone.
         /// who is CanMarry(), CanMarry method checks for if the person is have opposite sex, is alive, of age, not previously married.
-        /// sorry no gay marriages yet. :)
+        /// no gay marriages yet.
         /// </summary>
         /// <param name="population"></param>
         private void GettingMarried()
@@ -399,7 +476,7 @@ namespace ClanSim
                     significantOther.IsAlive)
                 {
 
-                    Helper.msg($"-> {Person.PersonInfoString(person)} got married to {Person.PersonInfoString(significantOther)})");
+                    Helper.msg($"-> {Person.PersonInfoString(person)} got married to {Person.PersonInfoString(significantOther)})", ConsoleColor.Magenta);
 
                     significantOther.SetSpouse(person.Id);
                     significantOther.Spouses.Add(person);
@@ -447,27 +524,37 @@ namespace ClanSim
             }
             return null;
         }
-
     }
-
     /// <summary>
     /// Person class, this will hold information and functionality related to each single person
     /// </summary>
     public class Person
     {
-        // constants
-        public static readonly int _DEATH_AGE = 80;
-        public static readonly int _FERTILITY_BEGIN_AGE = 16;
-        public static readonly int _MARRAGE_AGE = 18;
-        public static readonly int _FERTILITY_END_AGE = 65;
-        public static readonly int _NO_OF_CHILDS = 2;
+        // person settings variables
+        public static readonly int _DEATH_AGE               = 80;
+        public static readonly int _FERTILITY_BEGIN_AGE     = 16;
+        public static readonly int _MARRAGE_AGE             = 18;
+        public static readonly int _FERTILITY_END_AGE       = 55;
+        public static readonly int _NO_OF_CHILDREN          = 2;
 
-        // fields
-        private int _age;
+        /// <summary>
+        /// A list of Spouses, a person can only marry one person at a time but in the case of death of the spouse or a divorce etc.
+        /// They can remarry. but all the spouses ex or current are stored in the list.
+        /// The current active spouse can be found using Person.CurrentSpouseId
+        /// </summary>
+        public List<Person> Spouses { get; set; } = new List<Person>();
+
+        /// <summary>
+        /// These are all the Children belong to this person. biologically.
+        /// even though a person is only allowed to have _NO_OF_CHILDREN many children, but in the case of the
+        /// death of the spouse and remarrigae, They can have _NO_OF_CHILDREN more children.
+        /// </summary>
+        public List<Person> Childrens { get; set; } = new List<Person>();
 
         // properties
         public int Id { get; set; }
 
+        private int _age;
         public int Age
         {
             get { return _age; }
@@ -489,11 +576,13 @@ namespace ClanSim
 
         public string Name { get; set; }
 
+        public int CurrentSpouseId { get; set; } = 0;
+
         public bool IsMarried
         {
             get
             {
-                if (this.IsAlive && this.CurrentSpouseId > 0)
+                if (IsAlive && CurrentSpouseId > 0)
                 {
                     return true;
                 }
@@ -504,13 +593,12 @@ namespace ClanSim
             }
         }
 
-        public int CurrentSpouseId { get; set; } = 0;
-
+        // for simplicity the IsAlive is checked by looking at the age. this will be fixed in future versions.
         public bool IsAlive
         {
             get
             {
-                if (this.Age >= _DEATH_AGE)
+                if (Age >= _DEATH_AGE)
                 {
                     return false;
                 }
@@ -525,7 +613,7 @@ namespace ClanSim
         {
             get
             {
-                if (this.Age >= _FERTILITY_BEGIN_AGE && this.Age <= _FERTILITY_END_AGE)
+                if (Age >= _FERTILITY_BEGIN_AGE && Age <= _FERTILITY_END_AGE)
                 {
                     return true;
                 }
@@ -536,20 +624,18 @@ namespace ClanSim
             }
         }
 
-        public List<Person> Spouses { get; set; } = new List<Person>();
-        public List<Person> Childrens { get; set; } = new List<Person>();
-
         // Methods
         public bool CanMarry()
         {
-            if (this.Age >= _MARRAGE_AGE && this.IsAlive && this.CurrentSpouseId == 0)
+            if (Age >= _MARRAGE_AGE && IsAlive && CurrentSpouseId == 0)
                 return true;
             else
                 return false;
         }
+
         public bool SetSpouse(int spouseId)
         {
-            this.CurrentSpouseId = spouseId;
+            CurrentSpouseId = spouseId;
             return true;
         }
 
@@ -566,6 +652,10 @@ namespace ClanSim
             return $"{person.Name} ({person.Age}, {person.Gender})";
         }
     }
+
+    /// <summary>
+    /// A helper to display messages on the screen, like messages with colors and error messages etc.
+    /// </summary>
     public class Helper
     {
         public static void DisplayArray(int[] arr)

@@ -25,4 +25,4 @@ You can just copy and paste Program.cs and run, No dependencies as of 08/27/2024
 - Speed of the simulation.(PAUSE_BETWEEN_EACH_YEAR)
 
 
-![Screenshot](./images/image001.png)
+![Screenshot](./screenshots/image001.png)

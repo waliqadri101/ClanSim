@@ -34,12 +34,16 @@ namespace ClanSim
 
         static void Main(string[] args)
         {
-            // move the application to the given coordinates on the screen
+            // move the application to the given coordinates on the screen for better debugging experience.
             Program.MoveConsoleApplication(1000, 0);
 
-
+            // initialize the popuplation manager
             PopulationManager oPopulationManager = new PopulationManager();
-            oPopulationManager.Run();
+
+            // call the run method with parameters, the parameters are optionional
+            // if no parameters are provided the default values will be used
+            oPopulationManager.Run(initialPopulationSize: 10, noOfYearsToRun: 2000);
+            
             Console.ReadLine();
         }
     }
@@ -63,17 +67,33 @@ namespace ClanSim
     public class PopulationManager
     {
         // constants
-        public static readonly int INITIAL_POPULATION_SIZE = 6;
-        public static readonly int NO_OF_YEARS = 1000;
+        public static int INITIAL_POPULATION_SIZE = 6;
+        public static int NO_OF_YEARS = 1000;
 
-        // population list with persons
+        /// <summary>
+        /// population list with persons
+        /// </summary>
         public List<Person> Population = new List<Person>();
 
         /// <summary>
         /// Runs the simulation
         /// </summary>
-        public void Run()
+        public void Run(int initialPopulationSize = 0, int noOfYearsToRun = 0)
         {
+
+            #region IF CUSTOM initialPopulationSize AND noOfYearsToRun IS PROVIDED THAN MODIFY THE VARIABLES.
+            if (initialPopulationSize > 0)
+            {
+                PopulationManager.INITIAL_POPULATION_SIZE = initialPopulationSize;
+            }
+
+            if (noOfYearsToRun > 0)
+            {
+                PopulationManager.NO_OF_YEARS = noOfYearsToRun;
+            }
+            #endregion
+
+            // initialize the population
             InitializePopulation();
 
             for (int currentYear = 1; currentYear <= NO_OF_YEARS; currentYear++)
@@ -103,7 +123,7 @@ namespace ClanSim
 
         private bool IsPopulationWipedOut()
         {
-            return !Population.Where(p => p.IsAlive).Any();
+            return !Population.Any(p => p.IsAlive);
         }
 
         private void StartFamily()
@@ -353,7 +373,7 @@ namespace ClanSim
                 {
 
                     // FindMater method finds the mate and also marrys them together
-                    bool isMarriedNow = FindMate(this.Population, eachPerson);
+                    bool isMarriedNow = FindMateAndMarry(eachPerson);
                     if (!isMarriedNow)
                     {
                         Helper.msg($"-> {Person.PersonInfoString(eachPerson)} Can't find mate.");
@@ -412,6 +432,11 @@ namespace ClanSim
             }
         }
 
+        /// <summary>
+        /// Gets the spouse Person instance
+        /// </summary>
+        /// <param name="person">Person instance you need to find the spouse on </param>
+        /// <returns>returns the spouse Person object for the Person person object</returns>
         private Person GetSpouse(Person person)
         {
             // remove the spouse id from the couple, a dead person can't stay married. and significant other is also no longer married.
@@ -425,6 +450,9 @@ namespace ClanSim
 
     }
 
+    /// <summary>
+    /// Person class, this will hold information and functionality related to each single person
+    /// </summary>
     public class Person
     {
         // constants

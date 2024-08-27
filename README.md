@@ -30,8 +30,15 @@
 
 ## Screenshots
 
-Here are some screenshots of ClanSim in action:
+
+**Here are some screenshots of ClanSim in action:**
+
+Below, you can see the simulation at year 37. The application displays a yearly summary with details like current population, number of men and women, and the count of unmarried people. Below that, in green, you can see individual profiles, showing names, ages, genders, and who they are married to. 
+
+After the summary, the `GettingMarried()` method is called to handle matchmaking. Then, the `StartFamily()` method is executed, where you can observe couples having children.
 
 ![Screenshot](./screenshots/image002.png)
-![Screenshot](./screenshots/image003.png)
+
+In the next screenshot, the year is 70. At this stage, people start to pass away as the life cycle continues.
+
 ![Screenshot](./screenshots/image004.png)

@@ -22,44 +22,16 @@ namespace ClanSim
 {
     internal class Program
     {
-
-        // this region is only here for the functionality of moving the console application to the right for easier debugging experience
-        #region MOVING THE CONSOLE TO LEFT
-        const int SWP_NOSIZE = 0x0001;
-        const int SWP_NOZORDER = 0x0004;
-        const int SWP_SHOWWINDOW = 0x0040;
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr GetConsoleWindow();
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-
-        /// <summary>
-        /// this method is used to move the console application to x and y location. this functionality is not cross platform
-        /// and only specific to windows.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        private static void MoveConsoleApplication(int x, int y)
-        {
-            SetWindowPos(GetConsoleWindow(), IntPtr.Zero, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW);
-        }
-        #endregion
-
         static void Main(string[] args)
         {
-            // move the application to the given coordinates on the screen for better debugging experience.
-            Program.MoveConsoleApplication(1000, 0);
-
             // initialize the popuplation manager
-            PopulationManager oPopulationManager = new PopulationManager();
+            using PopulationManager oPopulationManager = new PopulationManager();
 
             // call the run method with parameters, the parameters are optionional
             // if no parameters are provided the default values will be used
             oPopulationManager.Run();
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
     }
 
@@ -79,12 +51,13 @@ namespace ClanSim
     /// <para><strong>Summary:</strong></para>
     /// <para>A summary of the population's status is printed each year, including counts of men, women, married people, and deaths.</para>
     /// </remarks>
-    public class PopulationManager
+    public class PopulationManager : IDisposable
     {
         // simulation settings variables, person level settings are in the Person class
         public static int INITIAL_POPULATION_SIZE = 25;
-        public static int NO_OF_YEARS = 500;
-        public static int PAUSE_BETWEEN_EACH_YEAR = 0;
+        public static int NO_OF_YEARS = 1000; // no of years the simulation will run for
+        public static int PAUSE_BETWEEN_EACH_YEAR = 100;    // pause in milli seconds between each year
+        public static bool SHOW_INDIVISUAL_DETAIL = true;   // if you want to show the information about indivisual person.
 
         // constants
         public readonly string[] commonMaleNames = new string[] { "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Christopher", "Daniel", "Matthew", "Anthony", "Mark", "Donald", "Steven", "Paul", "Andrew", "Joshua", "Kenneth", "Kevin", "Brian", "George", "Edward", "Ronald", "Timothy", "Jason", "Jeffrey", "Ryan", "Jacob", "Gary", "Nicholas", "Eric", "Stephen", "Jonathan", "Larry", "Justin", "Scott", "Brandon", "Benjamin", "Samuel", "Frank", "Gregory", "Raymond", "Alexander", "Patrick", "Jack", "Dennis", "Jerry", "Tyler", "Aaron", "Jose", "Henry", "Adam", "Douglas", "Nathan", "Peter", "Zachary", "Kyle", "Walter", "Harold", "Jeremy", "Ethan", "Carl", "Keith", "Roger", "Gerald", "Christian", "Terry", "Sean", "Arthur", "Austin", "Noah", "Lawrence", "Jesse", "Joe", "Bryan", "Billy", "Jordan", "Albert", "Dylan", "Bruce", "Willie", "Gabriel", "Alan", "Juan", "Wayne", "Roy", "Ralph", "Randy", "Eugene", "Carlos", "Russell", "Louis", "Philip", "Vincent", "Bobby", "Johnny", "Logan" };
@@ -93,7 +66,7 @@ namespace ClanSim
         /// <summary>
         /// population list with persons
         /// </summary>
-        public List<Person> Population = new List<Person>();
+        public List<Person>? Population = new List<Person>();
 
         /// <summary>
         /// Runs the simulation
@@ -122,13 +95,14 @@ namespace ClanSim
                 // if the population is wipedout then display the summary and end simulation
                 if (IsPopulationWipedOut())
                 {
-                    Helper.msg($"Everyone is dead, ending simulation".ToUpper(), ConsoleColor.Blue);
+                    Helper.msg($"EVERYONE DIED", ConsoleColor.Blue);
                     Summary();
                     break;
                 }
 
                 Thread.Sleep(PAUSE_BETWEEN_EACH_YEAR);
             }
+            Helper.msg("SIMULATION ENDED", ConsoleColor.Blue);
         }
 
         private void InitBanner()
@@ -302,7 +276,10 @@ namespace ClanSim
                             Gender = randomGenderForThisPerson
                         };
 
-                        Helper.msg($"{Person.PersonInfoString(person)} & {Person.PersonInfoString(spouse)} is having baby {Person.PersonInfoString(baby)}", ConsoleColor.Magenta);
+                        if (SHOW_INDIVISUAL_DETAIL)
+                        {
+                            Helper.msg($"{Person.PersonInfoString(person)} & {Person.PersonInfoString(spouse)} is having baby {Person.PersonInfoString(baby)}", ConsoleColor.Magenta);
+                        }
 
                         // save the information in objects and the population list
                         person.Childrens.Add(baby);
@@ -385,27 +362,30 @@ namespace ClanSim
                 Helper.msg($"--> Total Women who Died {womenWhoDied}", ConsoleColor.Red);
 
             #region SNAPSHOT THE POPULATION HERE
-            foreach (var person in Population)
+            if (SHOW_INDIVISUAL_DETAIL)
             {
-                Helper.msg($"----> {Person.PersonInfoString(person)}", ConsoleColor.DarkGreen, false);
-                var personSpouse = GetSpouse(person);
+                foreach (var person in Population)
+                {
+                    Helper.msg($"----> {Person.PersonInfoString(person)}", ConsoleColor.DarkGreen, false);
+                    var personSpouse = GetSpouse(person);
 
-                if (personSpouse != null && personSpouse.Id > 0)
-                {
-                    Helper.msg($" is married to  {Person.PersonInfoString(personSpouse)}", ConsoleColor.Yellow, withNewLine: false);
-                }
-                else
-                {
-                    Helper.msg("", withNewLine: false);
-                }
+                    if (personSpouse != null && personSpouse.Id > 0)
+                    {
+                        Helper.msg($" is married to  {Person.PersonInfoString(personSpouse)}", ConsoleColor.Yellow, withNewLine: false);
+                    }
+                    else
+                    {
+                        Helper.msg("", withNewLine: false);
+                    }
 
-                if (!person.IsAlive)
-                {
-                    Helper.msg(" (Deceased)", ConsoleColor.Red, withNewLine: true);
-                }
-                else
-                {
-                    Helper.msg("", ConsoleColor.Red, withNewLine: true);
+                    if (!person.IsAlive)
+                    {
+                        Helper.msg(" (Deceased)", ConsoleColor.Red, withNewLine: true);
+                    }
+                    else
+                    {
+                        Helper.msg("", ConsoleColor.Red, withNewLine: true);
+                    }
                 }
             }
             #endregion
@@ -416,7 +396,7 @@ namespace ClanSim
         /// </summary>
         private void HappyBirthdayToAll()
         {
-            for (int i = 0; i < this.Population.Count; i++)
+            for (int i = 0; i < Population.Count; i++)
             {
                 var eachPerson = this.Population[i];
 
@@ -451,7 +431,7 @@ namespace ClanSim
 
                     // FindMater method finds the mate and also marrys them together
                     bool isMarriedNow = FindMateAndMarry(eachPerson);
-                    if (!isMarriedNow)
+                    if (!isMarriedNow && SHOW_INDIVISUAL_DETAIL)
                     {
                         Helper.msg($"-> {Person.PersonInfoString(eachPerson)} Can't find mate.");
                     }
@@ -475,8 +455,8 @@ namespace ClanSim
                     significantOther.Id != person.Id &&
                     significantOther.IsAlive)
                 {
-
-                    Helper.msg($"-> {Person.PersonInfoString(person)} got married to {Person.PersonInfoString(significantOther)})", ConsoleColor.Magenta);
+                    if(SHOW_INDIVISUAL_DETAIL)
+                        Helper.msg($"-> {Person.PersonInfoString(person)} got married to {Person.PersonInfoString(significantOther)})", ConsoleColor.Magenta);
 
                     significantOther.SetSpouse(person.Id);
                     significantOther.Spouses.Add(person);
@@ -502,8 +482,9 @@ namespace ClanSim
             {
                 var significantOther = this.Population.Where(eachPerson => eachPerson.CurrentSpouseId == person.Id).FirstOrDefault();
 
-                Helper.msg($"{Person.PersonInfoString(person)} was married to {Person.PersonInfoString(significantOther!)}", ConsoleColor.Red);
-
+                if(SHOW_INDIVISUAL_DETAIL)
+                    Helper.msg($"{Person.PersonInfoString(person)} was married to {Person.PersonInfoString(significantOther!)}", ConsoleColor.Red);
+                
                 significantOther!.CurrentSpouseId = 0;
                 person.CurrentSpouseId = 0;
             }
@@ -524,6 +505,16 @@ namespace ClanSim
             }
             return null;
         }
+
+        public void Dispose()
+        {
+
+            if (Population != null)
+            {
+                Population.Clear();
+                Population = null;
+            }
+        }
     }
     /// <summary>
     /// Person class, this will hold information and functionality related to each single person
@@ -532,9 +523,9 @@ namespace ClanSim
     {
         // person settings variables
         public static readonly int _DEATH_AGE               = 80;
-        public static readonly int _FERTILITY_BEGIN_AGE     = 14;
-        public static readonly int _MARRAGE_AGE             = 10;
-        public static readonly int _FERTILITY_END_AGE       = 80;
+        public static readonly int _FERTILITY_BEGIN_AGE     = 16;
+        public static readonly int _MARRAGE_AGE             = 18;
+        public static readonly int _FERTILITY_END_AGE       = 55;
         public static readonly int _NO_OF_CHILDREN          = 2;
 
         /// <summary>
@@ -564,11 +555,6 @@ namespace ClanSim
                     return;
 
                 _age = value;
-
-                if (!IsAlive)
-                {
-                    Helper.msg($"{Name} just passed away", ConsoleColor.Red);
-                }
             }
         }
 
@@ -729,3 +715,33 @@ namespace ClanSim
     }
 
 }
+
+
+//// this region is only here for the functionality of moving the console application to the right for easier debugging experience
+//#region MOVING THE CONSOLE TO LEFT
+//const int SWP_NOSIZE = 0x0001;
+//const int SWP_NOZORDER = 0x0004;
+//const int SWP_SHOWWINDOW = 0x0040;
+
+//[DllImport("kernel32.dll", SetLastError = true)]
+//static extern IntPtr GetConsoleWindow();
+
+//[DllImport("user32.dll", SetLastError = true)]
+//static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+///// <summary>
+///// this method is used to move the console application to x and y location. this functionality is not cross platform
+///// and only specific to windows.
+///// </summary>
+///// <param name="x"></param>
+///// <param name="y"></param>
+//private static void MoveConsoleApplication(int x, int y)
+//{
+//    SetWindowPos(GetConsoleWindow(), IntPtr.Zero, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW);
+//}
+//#endregion
+
+
+
+//// move the application to the given coordinates on the screen for better debugging experience.
+//Program.MoveConsoleApplication(1000, 0);

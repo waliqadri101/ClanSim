@@ -16,21 +16,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
-
+using System.Threading.Tasks;
 namespace ClanSim
 {
     internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            // initialize the popuplation manager
-            using PopulationManager oPopulationManager = new PopulationManager();
-
-            // call the run method with parameters, the parameters are optionional
-            // if no parameters are provided the default values will be used
-            oPopulationManager.Run();
-
+            // instansiate  the PopulationManager class an call the Run() method
+            using (PopulationManager oPopulationManager = new PopulationManager())
+            {
+                oPopulationManager.Run();
+            }
             Console.ReadKey();
         }
     }
@@ -54,9 +53,9 @@ namespace ClanSim
     public class PopulationManager : IDisposable
     {
         // simulation settings variables, person level settings are in the Person class
-        public static int INITIAL_POPULATION_SIZE = 25;
-        public static int NO_OF_YEARS = 1000; // no of years the simulation will run for
-        public static int PAUSE_BETWEEN_EACH_YEAR = 500;    // pause in milli seconds between each year
+        public static int INITIAL_POPULATION_SIZE = 10;
+        public static int NO_OF_YEARS = 5000; // no of years the simulation will run for
+        public static int PAUSE_BETWEEN_EACH_YEAR = 250;    // pause in milli seconds between each year
         public static bool SHOW_INDIVISUAL_DETAIL = true;   // if you want to show the information about indivisual person.
 
         // constants
@@ -80,9 +79,9 @@ namespace ClanSim
 
             for (int currentYear = 1; currentYear <= NO_OF_YEARS; currentYear++)
             {
-                Helper.msg("");
-                Helper.msg($"Current year is {currentYear}", ConsoleColor.Gray);
-                Helper.msg($"===============", ConsoleColor.Gray);
+                DisplayHelper.msg("");
+                DisplayHelper.msg($"Current year is {currentYear}", ConsoleColor.Gray);
+                DisplayHelper.msg($"===============", ConsoleColor.Gray);
 
                 Summary();
 
@@ -95,14 +94,14 @@ namespace ClanSim
                 // if the population is wipedout then display the summary and end simulation
                 if (IsPopulationWipedOut())
                 {
-                    Helper.msg($"EVERYONE DIED", ConsoleColor.Blue);
+                    DisplayHelper.msg($"EVERYONE DIED", ConsoleColor.Blue);
                     Summary();
                     break;
                 }
 
                 Thread.Sleep(PAUSE_BETWEEN_EACH_YEAR);
             }
-            Helper.msg("SIMULATION ENDED", ConsoleColor.Blue);
+            DisplayHelper.msg("SIMULATION ENDED", ConsoleColor.Blue);
         }
 
         private void InitBanner()
@@ -139,7 +138,7 @@ namespace ClanSim
             Console.WriteLine(@"");
             Console.WriteLine(@"*************************************************************");
             Console.ResetColor();
-            Helper.msg("Press any key to run the simulation..", ConsoleColor.Yellow);
+            DisplayHelper.msg("Press any key to run the simulation..", ConsoleColor.Yellow);
             Console.ReadKey();
         }
 
@@ -213,7 +212,7 @@ namespace ClanSim
 
         private void StartFamily()
         {
-            Helper.msg($"Initialiing StartFamily Method on this batch", ConsoleColor.Blue);
+            DisplayHelper.msg($"Initialiing StartFamily Method on this batch", ConsoleColor.Blue);
 
             int populationCount = this.Population.Count;
             for (int i = 0; i < populationCount; i++)
@@ -278,7 +277,7 @@ namespace ClanSim
 
                         if (SHOW_INDIVISUAL_DETAIL)
                         {
-                            Helper.msg($"{Person.PersonInfoString(person)} & {Person.PersonInfoString(spouse)} is having baby {Person.PersonInfoString(baby)}", ConsoleColor.Magenta);
+                            DisplayHelper.msg($"{Person.PersonInfoString(person)} & {Person.PersonInfoString(spouse)} is having baby {Person.PersonInfoString(baby)}", ConsoleColor.Magenta);
                         }
 
                         // save the information in objects and the population list
@@ -335,56 +334,56 @@ namespace ClanSim
             int womenWhoDied = Population.Where(person => person.Gender == Person.SexType.Female && !person.IsAlive).Count();
             int totalUnMarriedPeople = Population.Where(person => !person.IsMarried && person.IsAlive).Count();
 
-            Helper.msg("Summary", ConsoleColor.Blue);
-            Helper.msg("=======", ConsoleColor.Blue);
+            DisplayHelper.msg("Summary", ConsoleColor.Blue);
+            DisplayHelper.msg("=======", ConsoleColor.Blue);
 
 
-            Helper.msg($"--> Total population {totalPopulation}", ConsoleColor.Yellow);
+            DisplayHelper.msg($"--> Total population {totalPopulation}", ConsoleColor.Yellow);
 
             if ((menWhoDied + womenWhoDied) > 0)
-                Helper.msg($"--> Total dead {menWhoDied + womenWhoDied}", ConsoleColor.Red);
+                DisplayHelper.msg($"--> Total dead {menWhoDied + womenWhoDied}", ConsoleColor.Red);
 
-            Helper.msg($"--> Total No Of Men {noOfMen}", ConsoleColor.Yellow);
+            DisplayHelper.msg($"--> Total No Of Men {noOfMen}", ConsoleColor.Yellow);
 
-            Helper.msg($"--> Total No Of Women {noOfWomen}", ConsoleColor.Yellow);
+            DisplayHelper.msg($"--> Total No Of Women {noOfWomen}", ConsoleColor.Yellow);
 
-            Helper.msg($"--> Total Married Men {marriedMen}", ConsoleColor.Yellow);
+            DisplayHelper.msg($"--> Total Married Men {marriedMen}", ConsoleColor.Yellow);
 
-            Helper.msg($"--> Total Married Women {marriedWomen}", ConsoleColor.Yellow);
+            DisplayHelper.msg($"--> Total Married Women {marriedWomen}", ConsoleColor.Yellow);
 
             if (totalUnMarriedPeople > 0)
-                Helper.msg($"--> Total Un-Married People {totalUnMarriedPeople}", ConsoleColor.Yellow);
+                DisplayHelper.msg($"--> Total Un-Married People {totalUnMarriedPeople}", ConsoleColor.Yellow);
 
             if (menWhoDied > 0)
-                Helper.msg($"--> Total Men who Died {menWhoDied}", ConsoleColor.Red);
+                DisplayHelper.msg($"--> Total Men who Died {menWhoDied}", ConsoleColor.Red);
 
             if (womenWhoDied > 0)
-                Helper.msg($"--> Total Women who Died {womenWhoDied}", ConsoleColor.Red);
+                DisplayHelper.msg($"--> Total Women who Died {womenWhoDied}", ConsoleColor.Red);
 
             #region SNAPSHOT THE POPULATION HERE
             if (SHOW_INDIVISUAL_DETAIL)
             {
                 foreach (var person in Population)
                 {
-                    Helper.msg($"----> {Person.PersonInfoString(person)}", ConsoleColor.DarkGreen, false);
+                    DisplayHelper.msg($"----> {Person.PersonInfoString(person)}", ConsoleColor.DarkGreen, false);
                     var personSpouse = GetSpouse(person);
 
                     if (personSpouse != null && personSpouse.Id > 0)
                     {
-                        Helper.msg($" is married to  {Person.PersonInfoString(personSpouse)}", ConsoleColor.Yellow, withNewLine: false);
+                        DisplayHelper.msg($" is married to  {Person.PersonInfoString(personSpouse)}", ConsoleColor.Yellow, withNewLine: false);
                     }
                     else
                     {
-                        Helper.msg("", withNewLine: false);
+                        DisplayHelper.msg("", withNewLine: false);
                     }
 
                     if (!person.IsAlive)
                     {
-                        Helper.msg(" (Deceased)", ConsoleColor.Red, withNewLine: true);
+                        DisplayHelper.msg(" (Deceased)", ConsoleColor.Red, withNewLine: true);
                     }
                     else
                     {
-                        Helper.msg("", ConsoleColor.Red, withNewLine: true);
+                        DisplayHelper.msg("", ConsoleColor.Red, withNewLine: true);
                     }
                 }
             }
@@ -421,7 +420,7 @@ namespace ClanSim
         /// <param name="population"></param>
         private void GettingMarried()
         {
-            Helper.msg($"Initialiing GettingMarried Method on this batch", ConsoleColor.Blue);
+            DisplayHelper.msg($"Initialiing GettingMarried Method on this batch", ConsoleColor.Blue);
             for (int i = 0; i < this.Population.Count; i++)
             {
                 var eachPerson = this.Population[i];
@@ -433,7 +432,7 @@ namespace ClanSim
                     bool isMarriedNow = FindMateAndMarry(eachPerson);
                     if (!isMarriedNow && SHOW_INDIVISUAL_DETAIL)
                     {
-                        Helper.msg($"-> {Person.PersonInfoString(eachPerson)} Can't find mate.");
+                        DisplayHelper.msg($"-> {Person.PersonInfoString(eachPerson)} Can't find mate.");
                     }
                 }
             }
@@ -456,7 +455,7 @@ namespace ClanSim
                     significantOther.IsAlive)
                 {
                     if(SHOW_INDIVISUAL_DETAIL)
-                        Helper.msg($"-> {Person.PersonInfoString(person)} got married to {Person.PersonInfoString(significantOther)})", ConsoleColor.Magenta);
+                        DisplayHelper.msg($"-> {Person.PersonInfoString(person)} got married to {Person.PersonInfoString(significantOther)})", ConsoleColor.Magenta);
 
                     significantOther.SetSpouse(person.Id);
                     significantOther.Spouses.Add(person);
@@ -483,7 +482,7 @@ namespace ClanSim
                 var significantOther = this.Population.Where(eachPerson => eachPerson.CurrentSpouseId == person.Id).FirstOrDefault();
 
                 if(SHOW_INDIVISUAL_DETAIL)
-                    Helper.msg($"{Person.PersonInfoString(person)} was married to {Person.PersonInfoString(significantOther!)}", ConsoleColor.Red);
+                    DisplayHelper.msg($"{Person.PersonInfoString(person)} was married to {Person.PersonInfoString(significantOther!)}", ConsoleColor.Red);
                 
                 significantOther!.CurrentSpouseId = 0;
                 person.CurrentSpouseId = 0;
@@ -526,7 +525,7 @@ namespace ClanSim
         public static readonly int _FERTILITY_BEGIN_AGE     = 16;
         public static readonly int _MARRAGE_AGE             = 18;
         public static readonly int _FERTILITY_END_AGE       = 55;
-        public static readonly int _NO_OF_CHILDREN          = 2;
+        public static readonly int _NO_OF_CHILDREN          = 3;
 
         /// <summary>
         /// A list of Spouses, a person can only marry one person at a time but in the case of death of the spouse or a divorce etc.
@@ -642,78 +641,72 @@ namespace ClanSim
     /// <summary>
     /// A helper to display messages on the screen, like messages with colors and error messages etc.
     /// </summary>
-    public class Helper
+    public class DisplayHelper
     {
         public static void DisplayArray(int[] arr)
         {
-            msg("[", ConsoleColor.DarkYellow, false);
-            for (int i = 0; i < arr.Length; i++)
+            if (arr == null || arr.Length == 0)
             {
-                msg(arr[i].ToString(), ConsoleColor.DarkYellow, false);
-                if (i < arr.Length - 1)
+                msg("[]", ConsoleColor.DarkYellow, true);
+                return;
+            }
+
+            // For larger arrays, StringBuilder is more efficient
+            if (arr.Length > 4) // Threshold can be adjusted based on profiling
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("[");
+                for (int i = 0; i < arr.Length; i++)
                 {
-                    msg(", ", ConsoleColor.DarkYellow, false);
+                    sb.Append(arr[i]);
+                    if (i < arr.Length - 1)
+                    {
+                        sb.Append(", ");
+                    }
                 }
+                sb.Append("]");
+                msg(sb.ToString(), ConsoleColor.DarkYellow, true);
             }
-            msg("]", ConsoleColor.DarkYellow, true);
-        }
-        public static void msg(string sMessage)
-        {
-            try
+            else
             {
-                ConsoleColor originalColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(sMessage);
-                Console.ForegroundColor = originalColor;
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("An error occurred: " + ex.Message);
-                Console.ResetColor();
+                // For smaller arrays, simple concatenation is more efficient
+                string result = "[" + string.Join(", ", arr) + "]";
+                msg(result, ConsoleColor.DarkYellow, true);
             }
         }
         public static void msg(string sMessage, ConsoleColor foregroundColor = ConsoleColor.White, bool withNewLine = true)
         {
-            try
+            // Check if the color actually needs to be changed
+            if (Console.ForegroundColor != foregroundColor)
             {
-                ConsoleColor originalColor = Console.ForegroundColor;
                 Console.ForegroundColor = foregroundColor;
-                if (withNewLine)
-                {
-                    Console.WriteLine(sMessage);
-                }
-                else
-                {
-                    Console.Write(sMessage);
-                }
-                Console.ForegroundColor = originalColor;
             }
-            catch (Exception ex)
+
+            // Print the message
+            if (withNewLine)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("An error occurred: " + ex.Message);
+                Console.WriteLine(sMessage);
+            }
+            else
+            {
+                Console.Write(sMessage);
+            }
+
+            // Only reset color if it's different from the default
+            if (foregroundColor != ConsoleColor.White)
+            {
                 Console.ResetColor();
             }
         }
         public static void PrintError(string sMessage)
         {
-            try
-            {
-                ConsoleColor originalColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(sMessage);
-                Console.ForegroundColor = originalColor;
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("An error occurred: " + ex.Message);
-                Console.ResetColor();
-            }
+            msg(sMessage, ConsoleColor.Red, true);
+        }
+        public static void msg(string sMessage)
+        {
+            msg(sMessage, ConsoleColor.Green, true);
         }
     }
-
 }
 
 
